@@ -37,7 +37,7 @@ func receive_heart_beat() {
 			clients.Range(func(key, value interface{}) bool {
 				if time.Since(value.(time.Time)) > 5*time.Second {
 					clients.Delete(key)
-					fmt.Printf("Client %s timeout and removed\n", key)
+					fmt.Printf("Client %s Timeout and Removed\n", key)
 					sendCanMsg()
 				}
 				return true
@@ -53,10 +53,10 @@ func receive_heart_beat() {
 			_, loaded := clients.LoadOrStore(clientIP, time.Now())
 
 			if !loaded {
-				fmt.Printf("First connection from %s\n", clientIP)
+				fmt.Printf("First Connection From %s\n", clientIP)
 			} else {
 				clients.Store(clientIP, time.Now())
-				fmt.Printf("HEARTBEAT RECEIVED from %s\n", clientIP)
+				// fmt.Printf("HEARTBEAT RECEIVED from %s\n", clientIP)
 			}
 		}
 	}

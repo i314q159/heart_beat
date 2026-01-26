@@ -26,7 +26,7 @@ func send_heart_beat() {
 
 	heartbeatMsg := []byte("HEARTBEAT")
 
-	fmt.Println("Heartbeat client started")
+	fmt.Println("Heartbeat Client Started")
 
 	for range ticker.C {
 		_, err := conn.Write(heartbeatMsg)
@@ -35,6 +35,6 @@ func send_heart_beat() {
 			continue
 		}
 
-		fmt.Println("HEARTBEAT SENT")
+		// fmt.Println("HEARTBEAT SENT")
 	}
 }
