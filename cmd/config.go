@@ -1,10 +1,19 @@
 package cmd
 
 const (
-	ServerIP   = "192.168.10.2"
-	ServerPort = "9999"
+	serverIP   = "192.168.10.2"
+	serverPort = "9999"
+	clientPort = "8888"
 )
 
 func GetServerAddress() string {
-	return ServerIP + ":" + ServerPort
+	return serverIP + ":" + serverPort
+}
+
+func GetClientPort() string {
+	return clientPort
+}
+
+func GetServerPort() string {
+	return serverPort
 }

@@ -18,7 +18,9 @@ var ClientCmd = &cobra.Command{
 
 func send_heart_beat() {
 	serverAddr, _ := net.ResolveUDPAddr("udp", GetServerAddress())
-	conn, _ := net.DialUDP("udp", nil, serverAddr)
+
+	localAddr, _ := net.ResolveUDPAddr("udp", ":"+GetClientPort())
+	conn, _ := net.DialUDP("udp", localAddr, serverAddr)
 	defer conn.Close()
 
 	ticker := time.NewTicker(1 * time.Second)
@@ -34,7 +36,5 @@ func send_heart_beat() {
 			fmt.Printf("Failed to send heartbeat: %v\n", err)
 			continue
 		}
-
-		// fmt.Println("HEARTBEAT SENT")
 	}
 }

@@ -19,14 +19,14 @@ var ServerCmd = &cobra.Command{
 }
 
 func receive_heart_beat() {
-	addr, _ := net.ResolveUDPAddr("udp", ":"+ServerPort)
+	addr, _ := net.ResolveUDPAddr("udp", ":"+GetServerPort())
 	conn, _ := net.ListenUDP("udp", addr)
 	defer conn.Close()
 
 	var clients sync.Map
 	buffer := make([]byte, 1024)
 
-	fmt.Println("Heartbeat receiver started on port " + ServerPort)
+	fmt.Println("Heartbeat receiver started on port " + GetServerPort())
 
 	// 清理超时客户端，每1秒检查一次，超时时间是5秒
 	go func() {
@@ -56,7 +56,6 @@ func receive_heart_beat() {
 				fmt.Printf("First Connection From %s\n", clientIP)
 			} else {
 				clients.Store(clientIP, time.Now())
-				// fmt.Printf("HEARTBEAT RECEIVED from %s\n", clientIP)
 			}
 		}
 	}
