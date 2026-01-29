@@ -63,7 +63,7 @@ func receive_heart_beat() {
 }
 
 func sendCanMsg() {
-	cmd := exec.Command("gnome-terminal", "--", "bash", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送'; exec bash")
+	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送';")
 	err := cmd.Start()
 	if err != nil {
 		panic(err)
