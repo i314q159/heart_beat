@@ -14,7 +14,6 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.PersistentFlags()
 	RootCmd.AddCommand(ServerCmd)
 	RootCmd.AddCommand(ClientCmd)
 }
