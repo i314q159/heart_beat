@@ -77,9 +77,7 @@ func receive_heart_beat() {
 }
 
 func sendCanMsg() {
-	logger.Info("心跳停止",
-		zap.Time("CAN指令发送时间", time.Now()),
-	)
+	logger.Info("sending CAN message", zap.Time("send_time", time.Now()))
 
 	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送';")
 	err := cmd.Start()
