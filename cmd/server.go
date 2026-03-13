@@ -8,7 +8,22 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
+
+var logger *zap.Logger
+
+func init() {
+	config := zap.NewProductionConfig()
+	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
+	config.OutputPaths = []string{"heartbeat.log"}
+	var err error
+	logger, err = config.Build()
+	if err != nil {
+		panic("初始化日志失败: " + err.Error())
+	}
+}
 
 var ServerCmd = &cobra.Command{
 	Use:   "server",
@@ -62,6 +77,10 @@ func receive_heart_beat() {
 }
 
 func sendCanMsg() {
+	logger.Info("心跳停止",
+		zap.Time("CAN指令发送时间", time.Now()),
+	)
+
 	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送';")
 	err := cmd.Start()
 	if err != nil {

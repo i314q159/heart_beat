@@ -1,3 +1,5 @@
 *.exe
 heart_beat_amd64
 heart_beat_arm64
+
+*.log
