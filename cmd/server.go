@@ -2,27 +2,25 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"net"
+	"os"
 	"os/exec"
 	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-var logger *zap.Logger
+var logFile *os.File
 
 func init() {
-	config := zap.NewProductionConfig()
-	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
-	config.OutputPaths = []string{"heartbeat.log"}
 	var err error
-	logger, err = config.Build()
+	logFile, err = os.OpenFile("heartbeat.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		panic("初始化日志失败: " + err.Error())
+		panic(err)
 	}
+	log.SetOutput(logFile)
 }
 
 var ServerCmd = &cobra.Command{
@@ -53,6 +51,7 @@ func receive_heart_beat() {
 				if time.Since(value.(time.Time)) > 5*time.Second {
 					clients.Delete(key)
 					fmt.Printf("Client %s Timeout and Removed\n", key)
+
 					sendCanMsg()
 				}
 				return true
@@ -77,7 +76,10 @@ func receive_heart_beat() {
 }
 
 func sendCanMsg() {
-	logger.Info("sending CAN message", zap.Time("send_time", time.Now()))
+	log.Println("心跳停止")
+	if logFile != nil {
+		logFile.Sync()
+	}
 
 	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送';")
 	err := cmd.Start()
