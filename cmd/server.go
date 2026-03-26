@@ -27,17 +27,17 @@ var ServerCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Heart beat server",
 	Run: func(cmd *cobra.Command, args []string) {
-		receive_heart_beat()
+		receiveHeartBeat()
 	},
 }
 
-func receive_heart_beat() {
+func receiveHeartBeat() {
 	addr, _ := net.ResolveUDPAddr("udp", ":"+GetServerPort())
 	conn, _ := net.ListenUDP("udp", addr)
 	defer conn.Close()
 
 	var clients sync.Map
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 65507)
 
 	fmt.Println("Heartbeat receiver started on port " + GetServerPort())
 
@@ -81,7 +81,7 @@ func sendCanMsg() {
 		logFile.Sync()
 	}
 
-	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040; echo 'CAN指令已发送';")
+	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040;")
 	err := cmd.Start()
 	if err != nil {
 		panic(err)

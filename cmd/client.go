@@ -12,11 +12,11 @@ var ClientCmd = &cobra.Command{
 	Use:   "client",
 	Short: "Heart beat client",
 	Run: func(cmd *cobra.Command, args []string) {
-		send_heart_beat()
+		sendHeartBeat()
 	},
 }
 
-func send_heart_beat() {
+func sendHeartBeat() {
 	serverAddr, _ := net.ResolveUDPAddr("udp", GetServerAddress())
 
 	localAddr, _ := net.ResolveUDPAddr("udp", ":"+GetClientPort())
