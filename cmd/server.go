@@ -14,7 +14,7 @@ import (
 var logServer *os.File
 
 const (
-	// 清理超时客户端，监测心跳时间
+	// 清理超时客户端，监听心跳时间
 	t1 = 1 * time.Second
 
 	// 心跳超时时间
@@ -41,14 +41,14 @@ var ServerCmd = &cobra.Command{
 }
 
 func receiveHeartBeat() {
-	addr, _ := net.ResolveUDPAddr("udp", ":"+GetServerPort())
+	addr, _ := net.ResolveUDPAddr("udp", GetServerAddress())
 	conn, _ := net.ListenUDP("udp", addr)
 	defer conn.Close()
 
 	var clients sync.Map
 	buffer := make([]byte, 65507)
 
-	log.Println("心跳监听开始，端口： " + GetServerPort())
+	log.Println("心跳监听开始")
 
 	go func() {
 		ticker := time.NewTicker(t1)
@@ -86,7 +86,6 @@ func receiveHeartBeat() {
 	}
 }
 func block() {
-	log.Println("心跳停止")
 	if logServer != nil {
 		logServer.Sync()
 	}
