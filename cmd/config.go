@@ -1,6 +1,7 @@
 package cmd
 
 const (
+	// serverIP = "127.0.0.1"
 	serverIP   = "192.168.10.2"
 	serverPort = "9999"
 	clientPort = "8888"

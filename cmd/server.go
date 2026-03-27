@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -12,21 +11,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logFile *os.File
+var logServer *os.File
 
-func init() {
+var (
+	// 清理超时客户端，监测心跳时间
+	t1 = 1 * time.Second
+
+	// 心跳超时时间
+	t2 = 10 * time.Second
+)
+
+func loggerServer() {
 	var err error
-	logFile, err = os.OpenFile("heartbeat.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logServer, err = os.OpenFile("heartbeat_server.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
-	log.SetOutput(logFile)
+
+	log.SetOutput(logServer)
 }
 
 var ServerCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Heart beat server",
 	Run: func(cmd *cobra.Command, args []string) {
+		loggerServer()
 		receiveHeartBeat()
 	},
 }
@@ -39,19 +48,21 @@ func receiveHeartBeat() {
 	var clients sync.Map
 	buffer := make([]byte, 65507)
 
-	fmt.Println("Heartbeat receiver started on port " + GetServerPort())
+	log.Println("心跳监听开始，端口： " + GetServerPort())
 
-	// 清理超时客户端，每1秒检查一次，超时时间是5秒
 	go func() {
-		ticker := time.NewTicker(1 * time.Second)
+		ticker := time.NewTicker(t1)
 		defer ticker.Stop()
 
 		for range ticker.C {
 			clients.Range(func(key, value interface{}) bool {
-				if time.Since(value.(time.Time)) > 5*time.Second {
+				if time.Since(value.(time.Time)) > t2 {
 					clients.Delete(key)
-					fmt.Printf("Client %s Timeout and Removed\n", key)
 
+					elapsed := time.Since(value.(time.Time))
+					log.Printf("%s 心跳超时： %v秒，阈值： %v秒\n", key, elapsed, t2)
+
+					block()
 					sendCanMsg()
 				}
 				return true
@@ -67,25 +78,31 @@ func receiveHeartBeat() {
 			_, loaded := clients.LoadOrStore(clientIP, time.Now())
 
 			if !loaded {
-				fmt.Printf("First Connection From %s\n", clientIP)
+				log.Printf("%s 心跳第一次收到\n", clientIP)
 			} else {
 				clients.Store(clientIP, time.Now())
 			}
 		}
 	}
 }
+func block() {
+	log.Println("心跳停止")
+	if logServer != nil {
+		logServer.Sync()
+	}
+}
 
 func sendCanMsg() {
-	log.Println("心跳停止")
-	if logFile != nil {
-		logFile.Sync()
-	}
-
-	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040;")
+	cmd := exec.Command("sh", "-c", "cansend can0 011#0000040000000040")
 	err := cmd.Start()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("CAN 指令已发送")
+	go func() {
+		err := cmd.Wait()
+		if err != nil {
+			panic(err)
+		}
+	}()
 }
