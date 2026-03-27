@@ -13,7 +13,7 @@ import (
 
 var logServer *os.File
 
-var (
+const (
 	// 清理超时客户端，监测心跳时间
 	t1 = 1 * time.Second
 
