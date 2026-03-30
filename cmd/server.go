@@ -85,6 +85,7 @@ func receiveHeartBeat() {
 		}
 	}
 }
+
 func block() {
 	if logServer != nil {
 		logServer.Sync()
