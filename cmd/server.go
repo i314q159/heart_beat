@@ -60,7 +60,7 @@ func receiveHeartBeat() {
 					clients.Delete(key)
 
 					elapsed := time.Since(value.(time.Time))
-					log.Printf("%s 心跳超时： %v秒，阈值： %v秒\n", key, elapsed, t2)
+					log.Printf("%s 心跳超时：%v秒，阈值：%v秒\n", key, elapsed, t2)
 
 					block()
 					sendCanMsg()
