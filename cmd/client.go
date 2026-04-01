@@ -32,8 +32,8 @@ var ClientCmd = &cobra.Command{
 
 func sendHeartBeat() {
 	serverAddr, _ := net.ResolveUDPAddr("udp", GetServerAddress())
+	localAddr, _ := net.ResolveUDPAddr("udp", GetClientAddress())
 
-	localAddr, _ := net.ResolveUDPAddr("udp", ":"+GetClientPort())
 	conn, _ := net.DialUDP("udp", localAddr, serverAddr)
 	defer conn.Close()
 

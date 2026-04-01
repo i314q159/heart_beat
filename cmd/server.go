@@ -13,6 +13,7 @@ import (
 
 var logServer *os.File
 
+// TODO - 迁移到 config.go
 const (
 	// 清理超时客户端，监听心跳时间
 	t1 = 1 * time.Second
@@ -63,7 +64,7 @@ func receiveHeartBeat() {
 					log.Printf("%s 心跳超时：%v秒，阈值：%v秒\n", key, elapsed, t2)
 
 					block()
-					sendCanMsg()
+					// sendCanMsg()
 				}
 				return true
 			})
