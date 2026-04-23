@@ -64,7 +64,7 @@ func receiveHeartBeat() {
 					log.Printf("%s 心跳超时：%v秒，阈值：%v秒\n", key, elapsed, t2)
 
 					block()
-					// sendCanMsg()
+					sendCanMsg()
 				}
 				return true
 			})
